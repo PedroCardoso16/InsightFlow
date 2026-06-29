@@ -21,12 +21,14 @@ public class DemandService : IDemandService
         _userRepository = userRepository;
     }
 
-    public async Task<List<DemandDto>> GetAllAsync()
+
+    public async Task<List<DemandDto>> GetAllAsync(DemandFilterDto? filter = null)
     {
-        var demands = await _demandRepository.GetAllAsync();
+        var demands = await _demandRepository.GetAllAsync(filter);
 
         return demands.Select(MapToDto).ToList();
     }
+
 
     public async Task<DemandDto?> GetByIdAsync(Guid id)
     {

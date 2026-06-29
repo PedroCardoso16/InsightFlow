@@ -1,10 +1,11 @@
-﻿using InsightFlow.Domain.Entities;
+﻿using InsightFlow.Application.DTOs;
+using InsightFlow.Domain.Entities;
 
 namespace InsightFlow.Application.Interfaces;
 
 public interface IDemandRepository
 {
-    Task<List<Demand>> GetAllAsync();
+    Task<List<Demand>> GetAllAsync(DemandFilterDto? filter = null);
 
     Task<Demand?> GetByIdAsync(Guid id);
 

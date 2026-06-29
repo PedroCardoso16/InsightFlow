@@ -1,4 +1,5 @@
-﻿using InsightFlow.Application.Interfaces;
+﻿using InsightFlow.Application.DTOs;
+using InsightFlow.Application.Interfaces;
 using InsightFlow.Domain.Entities;
 using InsightFlow.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -14,13 +15,51 @@ public class DemandRepository : IDemandRepository
         _context = context;
     }
 
-    public async Task<List<Demand>> GetAllAsync()
+    public async Task<List<Demand>> GetAllAsync(DemandFilterDto? filter = null)
     {
-        return await _context.Demands
+        var query = _context.Demands
             .AsNoTracking()
             .Include(demand => demand.Category)
             .Include(demand => demand.CreatedByUser)
             .Include(demand => demand.AssignedToUser)
+            .AsQueryable();
+
+        if (filter is not null)
+        {
+            if (filter.Status.HasValue)
+                query = query.Where(demand => demand.Status == filter.Status.Value);
+
+            if (filter.Priority.HasValue)
+                query = query.Where(demand => demand.Priority == filter.Priority.Value);
+
+            if (filter.CategoryId.HasValue)
+                query = query.Where(demand => demand.CategoryId == filter.CategoryId.Value);
+
+            if (filter.CreatedByUserId.HasValue)
+                query = query.Where(demand => demand.CreatedByUserId == filter.CreatedByUserId.Value);
+
+            if (filter.AssignedToUserId.HasValue)
+                query = query.Where(demand => demand.AssignedToUserId == filter.AssignedToUserId.Value);
+
+            if (filter.StartDate.HasValue)
+                query = query.Where(demand => demand.CreatedAt >= filter.StartDate.Value);
+
+            if (filter.EndDate.HasValue)
+                query = query.Where(demand => demand.CreatedAt <= filter.EndDate.Value);
+
+            if (!string.IsNullOrWhiteSpace(filter.Search))
+            {
+                var search = filter.Search.ToLower();
+
+                query = query.Where(demand =>
+                    demand.Title.ToLower().Contains(search) ||
+                    demand.Description.ToLower().Contains(search) ||
+                    (demand.Notes != null && demand.Notes.ToLower().Contains(search))
+                );
+            }
+        }
+
+        return await query
             .OrderByDescending(demand => demand.CreatedAt)
             .ToListAsync();
     }

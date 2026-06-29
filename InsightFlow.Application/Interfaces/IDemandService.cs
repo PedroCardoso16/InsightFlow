@@ -4,7 +4,7 @@ namespace InsightFlow.Application.Interfaces;
 
 public interface IDemandService
 {
-    Task<List<DemandDto>> GetAllAsync();
+    Task<List<DemandDto>> GetAllAsync(DemandFilterDto? filter = null);
 
     Task<DemandDto?> GetByIdAsync(Guid id);
 

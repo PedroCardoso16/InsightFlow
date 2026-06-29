@@ -11,4 +11,12 @@ public interface IDashboardService
     Task<List<DashboardByPriorityDto>> GetByPriorityAsync();
 
     Task<List<DashboardByCategoryDto>> GetByCategoryAsync();
+
+    Task<List<DashboardMonthlyDto>> GetMonthlyEvolutionAsync();
+
+    Task<List<DashboardPriorityPercentageDto>> GetPriorityPercentagesAsync();
+
+    Task<List<DashboardTopCategoryDto>> GetTopCategoriesAsync();
+
+    Task<DashboardResolutionTimeDto> GetAverageResolutionTimeAsync();
 }

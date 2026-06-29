@@ -18,9 +18,10 @@ public class DemandsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    [HttpGet]
+    public async Task<IActionResult> GetAll([FromQuery] DemandFilterDto filter)
     {
-        var demands = await _demandService.GetAllAsync();
+        var demands = await _demandService.GetAllAsync(filter);
 
         return Ok(demands);
     }

@@ -87,4 +87,121 @@ public class DashboardService : IDashboardService
             .OrderByDescending(item => item.Total)
             .ToList();
     }
+
+    public async Task<List<DashboardMonthlyDto>> GetMonthlyEvolutionAsync()
+    {
+        var demands = await _demandRepository.GetAllAsync();
+
+        return demands
+            .GroupBy(demand => new
+            {
+                demand.CreatedAt.Year,
+                demand.CreatedAt.Month
+            })
+            .Select(group => new DashboardMonthlyDto
+            {
+                Year = group.Key.Year,
+                Month = group.Key.Month,
+                MonthName = GetMonthName(group.Key.Month),
+                Total = group.Count()
+            })
+            .OrderBy(item => item.Year)
+            .ThenBy(item => item.Month)
+            .ToList();
+    }
+
+    public async Task<List<DashboardPriorityPercentageDto>> GetPriorityPercentagesAsync()
+    {
+        var demands = await _demandRepository.GetAllAsync();
+
+        var total = demands.Count;
+
+        if (total == 0)
+            return new List<DashboardPriorityPercentageDto>();
+
+        return demands
+            .GroupBy(demand => demand.Priority)
+            .Select(group => new DashboardPriorityPercentageDto
+            {
+                Priority = group.Key,
+                PriorityName = group.Key.ToString(),
+                Total = group.Count(),
+                Percentage = Math.Round((decimal)group.Count() / total * 100, 2)
+            })
+            .OrderBy(item => item.Priority)
+            .ToList();
+    }
+
+    public async Task<List<DashboardTopCategoryDto>> GetTopCategoriesAsync()
+    {
+        var demands = await _demandRepository.GetAllAsync();
+
+        return demands
+            .Where(demand => demand.Category is not null)
+            .GroupBy(demand => new
+            {
+                demand.CategoryId,
+                demand.Category!.Name
+            })
+            .Select(group => new DashboardTopCategoryDto
+            {
+                CategoryId = group.Key.CategoryId,
+                CategoryName = group.Key.Name,
+                Total = group.Count()
+            })
+            .OrderByDescending(item => item.Total)
+            .Take(5)
+            .ToList();
+    }
+
+    public async Task<DashboardResolutionTimeDto> GetAverageResolutionTimeAsync()
+    {
+        var demands = await _demandRepository.GetAllAsync();
+
+        var completedDemands = demands
+            .Where(demand =>
+                demand.Status == DemandStatus.Completed &&
+                demand.CompletedAt.HasValue)
+            .ToList();
+
+        if (!completedDemands.Any())
+        {
+            return new DashboardResolutionTimeDto
+            {
+                CompletedDemands = 0,
+                AverageResolutionTimeInHours = 0,
+                AverageResolutionTimeInDays = 0
+            };
+        }
+
+        var averageHours = completedDemands
+            .Average(demand => (demand.CompletedAt!.Value - demand.CreatedAt).TotalHours);
+
+        return new DashboardResolutionTimeDto
+        {
+            CompletedDemands = completedDemands.Count,
+            AverageResolutionTimeInHours = Math.Round(averageHours, 2),
+            AverageResolutionTimeInDays = Math.Round(averageHours / 24, 2)
+        };
+    }
+
+    private static string GetMonthName(int month)
+    {
+        return month switch
+        {
+            1 => "Janeiro",
+            2 => "Fevereiro",
+            3 => "Março",
+            4 => "Abril",
+            5 => "Maio",
+            6 => "Junho",
+            7 => "Julho",
+            8 => "Agosto",
+            9 => "Setembro",
+            10 => "Outubro",
+            11 => "Novembro",
+            12 => "Dezembro",
+            _ => "Mês inválido"
+        };
+    }
 }
