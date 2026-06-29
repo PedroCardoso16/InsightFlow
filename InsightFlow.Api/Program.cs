@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Text;
+using InsightFlow.Api.Seed;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -107,5 +108,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+await DataSeeder.SeedAsync(app.Services);
 
 app.Run();
