@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="InsightFlow.Api/InsightFlow.Api.csproj" />
+  <Project Path="InsightFlow.Application/InsightFlow.Application.csproj" />
+  <Project Path="InsightFlow.Domain/InsightFlow.Domain.csproj" />
+  <Project Path="InsightFlow.Infrastructure/InsightFlow.Infrastructure.csproj" />
+  <Project Path="InsightFlow.Web/InsightFlow.Web.csproj" />
+</Solution>
