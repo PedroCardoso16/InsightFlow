@@ -1,0 +1,57 @@
+﻿@using InsightFlow.Web.Services
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <NavLink class="navbar-brand" href="/">
+            InsightFlow
+        </NavLink>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+                        Dashboard
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/demandas">
+                        Demandas
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/categorias">
+                        Categorias
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/usuarios">
+                        Usuários
+                    </NavLink>
+                </li>
+
+            </ul>
+
+            <button class="btn btn-outline-light btn-sm" @onclick="Logout">
+                Sair
+            </button>
+        </div>
+    </div>
+</nav>
+
+@code {
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        NavigationManager.NavigateTo("/login", true);
+    }
+}
