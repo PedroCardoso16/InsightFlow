@@ -1,0 +1,80 @@
+﻿@page "/usuarios/editar/{Id:guid}"
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">Editar Usuário</h2>
+            <p class="text-muted">Atualize os dados do usuário selecionado</p>
+        </div>
+
+        <button class="btn btn-outline-secondary" @onclick="GoBack">
+            Voltar
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="alert alert-info">
+            Carregando usuário...
+        </div>
+    }
+    else
+    {
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <div class="alert alert-danger">
+                @errorMessage
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(successMessage))
+        {
+            <div class="alert alert-success">
+                @successMessage
+            </div>
+        }
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+
+                <EditForm Model="updateUser" OnValidSubmit="HandleSubmit">
+                    <DataAnnotationsValidator />
+
+                    <div class="mb-3">
+                        <label class="form-label">Nome</label>
+                        <InputText class="form-control" @bind-Value="updateUser.Name" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">E-mail</label>
+                        <InputText class="form-control" @bind-Value="updateUser.Email" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Perfil</label>
+                        <InputSelect class="form-select" @bind-Value="updateUser.Role">
+                            <option value="1">Admin</option>
+                            <option value="2">Analista</option>
+                            <option value="3">Usuário</option>
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <InputCheckbox class="form-check-input" @bind-Value="updateUser.IsActive" />
+                        <label class="form-check-label">
+                            Usuário ativo
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
+                        @(isSubmitting ? "Salvando..." : "Salvar Alterações")
+                    </button>
+
+                </EditForm>
+
+            </div>
+        </div>
+    }
+
+</div>

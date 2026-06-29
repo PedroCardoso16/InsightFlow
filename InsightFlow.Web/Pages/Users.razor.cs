@@ -17,11 +17,20 @@ public partial class Users : ComponentBase
     protected bool isLoading = true;
 
     protected string errorMessage = string.Empty;
+    protected string successMessage = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadUsers();
+    }
+
+    protected async Task LoadUsers()
+    {
         try
         {
+            isLoading = true;
+            errorMessage = string.Empty;
+
             users = await UserService.GetAllAsync();
         }
         catch
@@ -39,6 +48,34 @@ public partial class Users : ComponentBase
         NavigationManager.NavigateTo("/");
     }
 
+    protected void GoToCreateUser()
+    {
+        NavigationManager.NavigateTo("/usuarios/novo");
+    }
+
+    protected void GoToEditUser(Guid id)
+    {
+        NavigationManager.NavigateTo($"/usuarios/editar/{id}");
+    }
+
+    protected async Task InactivateUser(Guid id)
+    {
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+
+        var result = await UserService.DeleteAsync(id);
+
+        if (!result)
+        {
+            errorMessage = "Não foi possível inativar o usuário.";
+            return;
+        }
+
+        successMessage = "Usuário inativado com sucesso.";
+
+        await LoadUsers();
+    }
+
     protected static string TranslateRole(int role)
     {
         return role switch
@@ -48,10 +85,5 @@ public partial class Users : ComponentBase
             3 => "Usuário",
             _ => "Desconhecido"
         };
-    }
-
-    protected void GoToCreateUser()
-    {
-        NavigationManager.NavigateTo("/usuarios/novo");
     }
 }

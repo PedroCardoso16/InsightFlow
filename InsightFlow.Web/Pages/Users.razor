@@ -8,7 +8,6 @@
             <p class="text-muted">Gerenciamento de usuários do sistema</p>
         </div>
 
-       
         <div class="d-flex gap-2">
             <button class="btn btn-primary" @onclick="GoToCreateUser">
                 Novo Usuário
@@ -18,7 +17,6 @@
                 Voltar ao Dashboard
             </button>
         </div>
-
     </div>
 
     @if (isLoading)
@@ -44,6 +42,13 @@
         <div class="card shadow-sm border-0">
             <div class="card-body">
 
+                @if (!string.IsNullOrWhiteSpace(successMessage))
+                {
+                    <div class="alert alert-success">
+                        @successMessage
+                    </div>
+                }
+
                 <table class="table table-hover table-sm align-middle">
                     <thead>
                         <tr>
@@ -52,6 +57,7 @@
                             <th>Perfil</th>
                             <th>Status</th>
                             <th>Criado em</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
 
@@ -73,6 +79,20 @@
                                     }
                                 </td>
                                 <td>@user.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-sm btn-outline-primary"
+                                                @onclick="() => GoToEditUser(user.Id)">
+                                            Editar
+                                        </button>
+
+                                        <button class="btn btn-sm btn-outline-danger"
+                                                disabled="@(!user.IsActive)"
+                                                @onclick="() => InactivateUser(user.Id)">
+                                            Inativar
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
                         }
                     </tbody>
