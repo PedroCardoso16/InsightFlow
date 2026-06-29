@@ -12,6 +12,8 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<DashboardService>();
 builder.Services.AddScoped<DemandService>();
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AuthorizationMessageHandler>();
 
 builder.Services.AddHttpClient("InsightFlowApi", client =>

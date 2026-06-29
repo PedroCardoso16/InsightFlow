@@ -1,0 +1,115 @@
+﻿@page "/demandas/nova"
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">Nova Demanda</h2>
+            <p class="text-muted">Cadastre uma nova demanda no sistema</p>
+        </div>
+
+        <button class="btn btn-outline-secondary" @onclick="GoBack">
+            Voltar
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="alert alert-info">
+            Carregando informações...
+        </div>
+    }
+    else
+    {
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <div class="alert alert-danger">
+                @errorMessage
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(successMessage))
+        {
+            <div class="alert alert-success">
+                @successMessage
+            </div>
+        }
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+
+                <EditForm Model="createDemand" OnValidSubmit="HandleSubmit">
+                    <DataAnnotationsValidator />
+
+                    <div class="mb-3">
+                        <label class="form-label">Título</label>
+                        <InputText class="form-control" @bind-Value="createDemand.Title" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Descrição</label>
+                        <InputTextArea class="form-control" rows="4" @bind-Value="createDemand.Description" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Categoria</label>
+                        <InputSelect class="form-select" @bind-Value="createDemand.CategoryId">
+                            <option value="@Guid.Empty">Selecione uma categoria</option>
+
+                            @foreach (var category in categories.Where(category => category.IsActive))
+                            {
+                                <option value="@category.Id">@category.Name</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Prioridade</label>
+                        <InputSelect class="form-select" @bind-Value="createDemand.Priority">
+                            <option value="1">Baixa</option>
+                            <option value="2">Média</option>
+                            <option value="3">Alta</option>
+                            <option value="4">Crítica</option>
+                        </InputSelect>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Solicitante</label>
+                        <InputSelect class="form-select" @bind-Value="createDemand.CreatedByUserId">
+                            <option value="@Guid.Empty">Selecione um usuário</option>
+
+                            @foreach (var user in users.Where(user => user.IsActive))
+                            {
+                                <option value="@user.Id">@user.Name</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Responsável</label>
+                        <select class="form-select" @onchange="HandleAssignedUserChange">
+                            <option value="">Sem responsável</option>
+
+                            @foreach (var user in users.Where(user => user.IsActive))
+                            {
+                                <option value="@user.Id">@user.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Observações</label>
+                        <InputTextArea class="form-control" rows="3" @bind-Value="createDemand.Notes" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
+                        @(isSubmitting ? "Salvando..." : "Cadastrar Demanda")
+                    </button>
+
+                </EditForm>
+
+            </div>
+        </div>
+    }
+
+</div>

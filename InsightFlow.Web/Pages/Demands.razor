@@ -12,9 +12,17 @@
             <p class="text-muted">Acompanhamento das demandas cadastradas</p>
         </div>
 
-        <button class="btn btn-outline-primary" @onclick="GoToDashboard">
-            Voltar ao Dashboard
-        </button>
+        
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary" @onclick="GoToCreateDemand">
+                Nova Demanda
+            </button>
+
+            <button class="btn btn-outline-primary" @onclick="GoToDashboard">
+                Voltar ao Dashboard
+            </button>
+        </div>
+
     </div>
 
     @if (isLoading)
@@ -123,4 +131,10 @@
             _ => "Desconhecida"
         };
     }
+
+    private void GoToCreateDemand()
+    {
+        NavigationManager.NavigateTo("/demandas/nova");
+    }
+
 }

@@ -17,4 +17,14 @@ public class DemandService
         return await _httpClient.GetFromJsonAsync<List<DemandDto>>("api/Demands")
             ?? new List<DemandDto>();
     }
+
+    public async Task<DemandDto?> CreateAsync(CreateDemandDto createDemandDto)
+    {
+        var response = await _httpClient.PostAsJsonAsync("api/Demands", createDemandDto);
+
+        if (!response.IsSuccessStatusCode)
+            return null;
+
+        return await response.Content.ReadFromJsonAsync<DemandDto>();
+    }
 }
