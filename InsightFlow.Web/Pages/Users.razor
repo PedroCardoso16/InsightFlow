@@ -1,0 +1,77 @@
+﻿@page "/usuarios"
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">Usuários</h2>
+            <p class="text-muted">Gerenciamento de usuários do sistema</p>
+        </div>
+
+        <button class="btn btn-outline-primary" @onclick="GoToDashboard">
+            Voltar ao Dashboard
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="alert alert-info">
+            Carregando usuários...
+        </div>
+    }
+    else if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger">
+            @errorMessage
+        </div>
+    }
+    else if (!users.Any())
+    {
+        <div class="alert alert-warning">
+            Nenhum usuário encontrado.
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+
+                <table class="table table-hover table-sm align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+                            <th>Perfil</th>
+                            <th>Status</th>
+                            <th>Criado em</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var user in users)
+                        {
+                            <tr>
+                                <td>@user.Name</td>
+                                <td>@user.Email</td>
+                                <td>@TranslateRole(user.Role)</td>
+                                <td>
+                                    @if (user.IsActive)
+                                    {
+                                        <span class="badge bg-success">Ativo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inativo</span>
+                                    }
+                                </td>
+                                <td>@user.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    }
+
+</div>

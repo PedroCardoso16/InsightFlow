@@ -93,4 +93,8 @@ public partial class Home : ComponentBase
         NavigationManager.NavigateTo("/categorias");
     }
 
+    protected void GoToUsers()
+    {
+        NavigationManager.NavigateTo("/usuarios");
+    }
 }
