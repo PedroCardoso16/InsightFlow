@@ -1,9 +1,11 @@
 ﻿using InsightFlow.Application.DTOs;
 using InsightFlow.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InsightFlow.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class DemandsController : ControllerBase

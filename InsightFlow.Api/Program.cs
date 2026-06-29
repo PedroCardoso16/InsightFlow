@@ -1,4 +1,3 @@
-using System.Text;
 using InsightFlow.Application.Interfaces;
 using InsightFlow.Application.Services;
 using InsightFlow.Infrastructure.Data;
@@ -6,6 +5,9 @@ using InsightFlow.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,7 +59,21 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "Digite o token JWT no formato: Bearer {seu token}"
+    });
+
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("bearer", document)] = []
+    });
+});
 
 builder.Services.AddCors(options =>
 {
