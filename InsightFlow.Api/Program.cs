@@ -21,6 +21,10 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 
+// Demandas
+builder.Services.AddScoped<IDemandRepository, DemandRepository>();
+builder.Services.AddScoped<IDemandService, DemandService>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
