@@ -1,8 +1,11 @@
-using InsightFlow.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
+using System.Text;
 using InsightFlow.Application.Interfaces;
 using InsightFlow.Application.Services;
+using InsightFlow.Infrastructure.Data;
 using InsightFlow.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,10 +28,33 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDemandRepository, DemandRepository>();
 builder.Services.AddScoped<IDemandService, DemandService>();
 
-
 // Dashboard
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 
+// Autenticação
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+var jwtKey = builder.Configuration["Jwt:Key"];
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey!))
+    };
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -56,6 +82,7 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowBlazorApp");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
