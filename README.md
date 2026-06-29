@@ -1,12 +1,49 @@
 # InsightFlow
 
-O **InsightFlow** é um sistema web para gestão de demandas com dashboard analítico, desenvolvido- MigrationsO **InsightFlow** é um sistema web para gestão de demandas com dashboard analítico, desenvolvido com foco em demonstrar conhecimentos em desenvolvimento Full Stack utilizando **Blazor WebAssembly no Frontend** e **.NET com C# no Backend**.
+O **InsightFlow** é um sistema web para gestão de demandas por perfilO **InsightFlow** é um sistema web para gestão de demandas com dashboard analítico, desenvolvido com foco em demonstrar conhecimentos em desenvolvimento Full Stack utilizando **Blazor WebAssembly no Frontend** e **.NET com C# no Backend**.
+- Deploy de aplicação web
+
+---
+
+## Tecnologias Utilizadas
+
+### Backend
+
+- .NET
+- C#
+- ASP.NET Core Web API
+- Entity Framework Core
+- SQL Server
+- JWT Bearer Authentication
+- Swagger / OpenAPI
+
+### Frontend
+
+- Blazor WebAssembly
+- HTML
+- CSS
+- Bootstrap
+- HttpClient
+- LocalStorage para armazenamento do token JWT
+
+### Banco de Dados
+
+- SQL Server
+- Entity Framework Core
+- Migrations
+- Seed automático de dados iniciais
 
 ### Versionamento
 
 - Git
 - Git Flow
 - GitHub
+
+### Deploy
+
+- API publicada em hospedagem ASP.NET/.NET
+- Frontend Blazor WebAssembly publicado em hospedagem web
+- Banco de dados SQL Server online
 
 ---
 
@@ -25,7 +62,7 @@ InsightFlow
 
 ### InsightFlow.Api
 
-Camada responsável pela exposição dos endpoints REST, configuração de autenticação, autorização, Swagger e controllers da aplicação.
+Camada responsável pela exposição dos endpoints REST, configuração de autenticação, autorização, Swagger, CORS e controllers da aplicação.
 
 ### InsightFlow.Application
 
@@ -37,28 +74,30 @@ Camada responsável pelas entidades principais e enums do domínio.
 
 ### InsightFlow.Infrastructure
 
-Camada responsável pelo acesso ao banco de dados, DbContext, migrations e repositories.
+Camada responsável pelo acesso ao banco de dados, `DbContext`, migrations e repositories.
 
 ### InsightFlow.Web
 
-Camada de frontend desenvolvida em Blazor WebAssembly, responsável pela interface do usuário e consumo da API.
+Camada de frontend desenvolvida em Blazor WebAssembly, responsável pela interface do usuário, navegação, autenticação no client e consumo da API.
 
 ---
 
 ## Funcionalidades Implementadas
 
-### Autenticação
+## Autenticação
 
 - Login com e-mail e senha
 - Geração de token JWT
 - Armazenamento do token no LocalStorage
-- Envio automático do token nas requisições
+- Envio automático do token nas requisições HTTP
 - Logout
 - Proteção de rotas no Blazor
 
-### Autorização
+---
 
-O sistema possui controle de acesso por perfil:
+## Autorização
+
+O sistema possui controle de acesso baseado em perfis.
 
 | Perfil | Permissões |
 |---|---|
@@ -85,6 +124,9 @@ Permissões:
 - Gerenciar categorias
 - Gerenciar demandas
 - Visualizar dashboard
+- Acessar endpoints administrativos
+
+---
 
 ### Analyst
 
@@ -100,6 +142,9 @@ Permissões:
 - Gerenciar categorias
 - Gerenciar demandas
 - Visualizar dashboard
+- Não possui permissão para gerenciar usuários
+
+---
 
 ### User
 
@@ -115,21 +160,22 @@ Permissões:
 - Visualizar dashboard
 - Visualizar demandas
 - Criar demandas conforme regra atual
-
-> Observação: em um banco novo, os usuários de teste precisam ser cadastrados previamente ou criados por um seed de dados. O seed automático será uma melhoria futura para o deploy online.
+- Não possui permissão para gerenciar usuários
+- Não possui permissão para gerenciar categorias
 
 ---
 
 ## Módulos do Sistema
 
-### Dashboard
+## Dashboard
 
-O dashboard apresenta indicadores como:
+O dashboard apresenta indicadores analíticos como:
 
 - Total de demandas
 - Demandas abertas
 - Demandas em andamento
 - Demandas concluídas
+- Demandas canceladas
 - Taxa de conclusão
 - Tempo médio de resolução
 - Demandas por status
@@ -137,14 +183,20 @@ O dashboard apresenta indicadores como:
 - Top categorias
 - Evolução mensal
 
-### Demandas
+---
+
+## Demandas
 
 Funcionalidades:
 
 - Listar demandas
 - Criar demandas
 - Alterar status da demanda
-- Visualizar prioridade, categoria, solicitante e responsável
+- Visualizar prioridade
+- Visualizar categoria
+- Visualizar solicitante
+- Visualizar responsável
+- Visualizar data de criação
 
 Status disponíveis:
 
@@ -164,7 +216,9 @@ Prioridades disponíveis:
 4 = Crítica
 ```
 
-### Categorias
+---
+
+## Categorias
 
 Funcionalidades:
 
@@ -173,7 +227,9 @@ Funcionalidades:
 - Editar categorias
 - Inativar categorias
 
-### Usuários
+---
+
+## Usuários
 
 Funcionalidades:
 
@@ -186,13 +242,15 @@ Funcionalidades:
 
 ## Endpoints Principais
 
-### Auth
+## Auth
 
 ```http
 POST /api/Auth/login
 ```
 
-### Dashboard
+---
+
+## Dashboard
 
 ```http
 GET /api/Dashboard/summary
@@ -205,7 +263,9 @@ GET /api/Dashboard/top-categories
 GET /api/Dashboard/average-resolution-time
 ```
 
-### Demandas
+---
+
+## Demandas
 
 ```http
 GET /api/Demands
@@ -216,7 +276,9 @@ PATCH /api/Demands/{id}/status
 DELETE /api/Demands/{id}
 ```
 
-### Categorias
+---
+
+## Categorias
 
 ```http
 GET /api/Categories
@@ -226,7 +288,9 @@ PUT /api/Categories/{id}
 DELETE /api/Categories/{id}
 ```
 
-### Usuários
+---
+
+## Usuários
 
 ```http
 GET /api/Users
@@ -249,7 +313,7 @@ DELETE /api/Users/{id}
 
 ---
 
-## Configuração do Banco
+## Configuração do Banco Local
 
 A connection string utilizada em ambiente local está no arquivo:
 
@@ -330,57 +394,40 @@ Acesse:
 
 ---
 
-## Observação sobre Ambiente
+## Seed de Dados
 
-Atualmente o projeto está configurado para execução local, utilizando SQL Server LocalDB.
+O projeto possui seed automático para criação de dados iniciais.
 
-Para ambiente de produção, será necessário configurar:
+Ao iniciar a API em um banco vazio, o sistema cria:
 
-- Azure SQL Database ou outro banco SQL Server online
-- Connection string de produção
-- URL pública da API
-- URL pública do frontend
-- Configuração de CORS para o domínio publicado
-- Variáveis de ambiente para dados sensíveis
-- Seed automático para criação de dados iniciais
+- Usuário Admin
+- Usuário Analyst
+- Usuário User
+- Categorias iniciais
+- Demandas de exemplo
+
+Isso facilita a demonstração do sistema e permite testar o dashboard logo após a publicação.
 
 ---
 
-## Deploy Planejado
+## Observação sobre Segurança
 
-A hospedagem do projeto será organizada da seguinte forma:
+Este projeto possui credenciais de demonstração para facilitar testes em ambiente de avaliação.
 
-- Frontend Blazor WebAssembly: Azure Static Web Apps
-- Backend .NET API: Azure App Service
-- Banco de Dados: Azure SQL Database
+Em um ambiente real de produção, seria recomendado:
 
-Após o deploy, as URLs públicas serão adicionadas nesta seção.
-
-### URLs do Projeto
-
-Frontend:
-
-```text
-A definir
-```
-
-API:
-
-```text
-A definir
-```
-
-Swagger:
-
-```text
-A definir
-```
+- Trocar as senhas padrão
+- Armazenar connection strings em variáveis de ambiente
+- Utilizar secrets seguros
+- Configurar CORS de forma restrita
+- Implementar refresh token
+- Adicionar logs e auditoria
 
 ---
 
 ## Destaques Técnicos
 
-- Separação em camadas
+- Arquitetura em camadas
 - Uso de DTOs
 - Uso de Services e Repositories
 - API REST documentada com Swagger
@@ -390,24 +437,23 @@ A definir
 - Dashboard orientado a dados
 - Soft delete em categorias e usuários
 - Versionamento com Git
-- Estrutura preparada para deploy
+- Publicação online da aplicação
+- Seed automático de dados iniciais
 
 ---
 
 ## Melhorias Futuras
 
-- Deploy online
-- Seed automático de usuários, categorias e demandas
-- Refresh token
-- Controle visual de funcionalidades por perfil no Blazor
-- Paginação em listagens
-- Filtros avançados no frontend
-- Gráficos visuais no dashboard
-- Logs de auditoria
-- Testes automatizados
-- Melhorias de UI/UX
-- Responsividade avançada
-- Publicação com pipeline CI/CD
+- Melhorar responsividade da interface
+- Adicionar gráficos visuais ao dashboard
+- Criar paginação nas listagens
+- Criar filtros avançados no frontend
+- Adicionar logs de auditoria
+- Implementar refresh token
+- Criar testes automatizados
+- Melhorar tratamento global de erros
+- Criar pipeline CI/CD
+- Aplicar controle visual por perfil no frontend
 
 ---
 
@@ -415,15 +461,49 @@ A definir
 
 Desenvolvido por **Pedro da Costa Cardoso**.
 
-Projeto criado para demonstrar conhecimentos em desenvolvimento web com **Blazor, .NET, C#, API REST, SQL Server, JWT, Swagger, Bootstrap e arquitetura em camadas**.
+Projeto criado para demonstrar conhecimentos em desenvolvimento web com:
+
+- Blazor WebAssembly
+- .NET
+- C#
+- API REST
+- SQL Server
+- Entity Framework Core
+- JWT
+- Swagger
+- Bootstrap
+- Git Flow
+- Arquitetura em camadas
 
 O projeto foi criado para apresentar uma solução organizada, funcional e orientada a dados, permitindo cadastrar, acompanhar e analisar demandas por meio de indicadores visuais e operacionais.
 
 ---
 
+## URLs do Projeto
+
+### Frontend
+
+```text
+http://insightflow-web.runasp.net/login
+```
+
+### API
+
+```text
+http://insightflow-api.runasp.net
+```
+
+### Swagger
+
+```text
+http://insightflow-api.runasp.net/swagger
+```
+
+---
+
 ## Status do Projeto
 
-Projeto em desenvolvimento ativo.
+Projeto publicado e funcional em ambiente online.
 
 Funcionalidades já implementadas:
 
@@ -437,21 +517,26 @@ Funcionalidades já implementadas:
 - Dashboard analítico
 - Consumo de API protegida pelo frontend
 - Proteção de rotas no Blazor
-- Versionamento com Git
-
-Próximas etapas:
-
-- Deploy online
-- Configuração de ambiente de produção
 - Seed automático de dados iniciais
-- Melhorias visuais e responsividade
-- Ajustes de permissões visuais no frontend conforme perfil do usuário
+- Publicação online da API e do Frontend
+- Versionamento com Git e GitHub
+
+Melhorias futuras:
+
+- Melhorias visuais e responsividade avançada
+- Controle visual de menus conforme perfil do usuário
+- Paginação em listagens
+- Filtros avançados no frontend
+- Gráficos visuais no dashboard
+- Logs de auditoria
+- Testes automatizados
+- Pipeline CI/CD
 
 ---
 
 ## Objetivo do Projeto
 
-O objetivo do InsightFlow é permitir o controle de demandas internas, categorizando solicitações, acompanhando status, prioridades, responsáveis e gerando indicadores para apoio à tomada de decisão.
+O objetivo do **InsightFlow** é permitir o controle de demandas internas, categorizando solicitações, acompanhando status, prioridades, responsáveis e gerando indicadores para apoio à tomada de decisão.
 
 O sistema foi pensado para demonstrar conhecimentos em:
 
@@ -462,36 +547,7 @@ O sistema foi pensado para demonstrar conhecimentos em:
 - Consumo de API no Frontend
 - Entity Framework Core
 - SQL Server
-- Swagger
+- Swagger / OpenAPI
 - Git Flow
 - Organização em camadas
 - Dashboard analítico
-- Controle de acesso por perfil
-
----
-
-## Tecnologias Utilizadas
-
-### Backend
-
-- .NET
-- C#
-- ASP.NET Core Web API
-- Entity Framework Core
-- SQL Server / LocalDB
-- JWT Bearer Authentication
-- Swagger / OpenAPI
-
-### Frontend
-
-- Blazor WebAssembly
-- HTML
-- CSS
-- Bootstrap
-- HttpClient
-- LocalStorage para armazenamento do token JWT
-
-### Banco de Dados
-
-- SQL Server LocalDB
-- Entity Framework Core
