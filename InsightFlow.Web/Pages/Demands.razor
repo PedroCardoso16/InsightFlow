@@ -1,0 +1,126 @@
+﻿@page "/demandas"
+@using InsightFlow.Web.DTOs
+@using InsightFlow.Web.Services
+@inject DemandService DemandService
+@inject NavigationManager NavigationManager
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">Demandas</h2>
+            <p class="text-muted">Acompanhamento das demandas cadastradas</p>
+        </div>
+
+        <button class="btn btn-outline-primary" @onclick="GoToDashboard">
+            Voltar ao Dashboard
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="alert alert-info">
+            Carregando demandas...
+        </div>
+    }
+    else if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger">
+            @errorMessage
+        </div>
+    }
+    else if (!demands.Any())
+    {
+        <div class="alert alert-warning">
+            Nenhuma demanda encontrada.
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+
+                <table class="table table-hover table-sm align-middle">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Categoria</th>
+                            <th>Prioridade</th>
+                            <th>Status</th>
+                            <th>Solicitante</th>
+                            <th>Responsável</th>
+                            <th>Criada em</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var demand in demands)
+                        {
+                            <tr>
+                                <td>@demand.Title</td>
+                                <td>@demand.CategoryName</td>
+                                <td>@TranslatePriority(demand.Priority)</td>
+                                <td>@TranslateStatus(demand.Status)</td>
+                                <td>@demand.CreatedByUserName</td>
+                                <td>@(string.IsNullOrWhiteSpace(demand.AssignedToUserName) ? "-" : demand.AssignedToUserName)</td>
+                                <td>@demand.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    }
+
+</div>
+
+@code {
+    private List<DemandDto> demands = new();
+    private bool isLoading = true;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            demands = await DemandService.GetAllAsync();
+        }
+        catch
+        {
+            errorMessage = "Não foi possível carregar as demandas. Verifique se você está logado.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void GoToDashboard()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    private static string TranslateStatus(int status)
+    {
+        return status switch
+        {
+            1 => "Aberta",
+            2 => "Em andamento",
+            3 => "Concluída",
+            4 => "Cancelada",
+            _ => "Desconhecido"
+        };
+    }
+
+    private static string TranslatePriority(int priority)
+    {
+        return priority switch
+        {
+            1 => "Baixa",
+            2 => "Média",
+            3 => "Alta",
+            4 => "Crítica",
+            _ => "Desconhecida"
+        };
+    }
+}

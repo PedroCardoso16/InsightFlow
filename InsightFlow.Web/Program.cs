@@ -10,6 +10,8 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<DashboardService>();
+builder.Services.AddScoped<DemandService>();
 builder.Services.AddScoped<AuthorizationMessageHandler>();
 
 builder.Services.AddHttpClient("InsightFlowApi", client =>

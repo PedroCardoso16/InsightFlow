@@ -1,92 +1,265 @@
 ﻿@page "/"
-@inject HttpClient HttpClient
-@inject NavigationManager NavigationManager
 
-<h3>Dashboard InsightFlow</h3>
+<div class="container mt-4">
 
-@if (isLoading)
-{
-    <p>Carregando dados...</p>
-}
-else if (!string.IsNullOrWhiteSpace(errorMessage))
-{
-    <div class="alert alert-danger">
-        @errorMessage
-    </div>
-}
-else
-{
-    <div class="row">
-        <div class="col-md-3">
-            <div class="card p-3 shadow-sm">
-                <h5>Total</h5>
-                <h3>@summary?.TotalDemands</h3>
-            </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">Dashboard InsightFlow</h2>
+            <p class="text-muted">Indicadores analíticos das demandas</p>
         </div>
 
-        <div class="col-md-3">
-            <div class="card p-3 shadow-sm">
-                <h5>Abertas</h5>
-                <h3>@summary?.OpenDemands</h3>
-            </div>
-        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" @onclick="GoToDemands">
+                Ver Demandas
+            </button>
 
-        <div class="col-md-3">
-            <div class="card p-3 shadow-sm">
-                <h5>Em andamento</h5>
-                <h3>@summary?.InProgressDemands</h3>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card p-3 shadow-sm">
-                <h5>Concluídas</h5>
-                <h3>@summary?.CompletedDemands</h3>
-            </div>
+            <button class="btn btn-outline-danger" @onclick="Logout">
+                Sair
+            </button>
         </div>
     </div>
 
-    <div class="mt-4">
-        <div class="card p-3 shadow-sm">
-            <h5>Taxa de conclusão</h5>
-            <h3>@summary?.CompletionRate%</h3>
-        </div>
-    </div>
-}
-
-@code {
-    private DashboardSummaryDto? summary;
-    private bool isLoading = true;
-    private string errorMessage = string.Empty;
-
-    protected override async Task OnInitializedAsync()
+    @if (isLoading)
     {
-        try
-        {
-            summary = await HttpClient.GetFromJsonAsync<DashboardSummaryDto>("api/Dashboard/summary");
-        }
-        catch
-        {
-            errorMessage = "Não foi possível carregar o dashboard. Faça login novamente.";
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        <div class="alert alert-info">
+            Carregando dashboard...
+        </div>
+    }
+    else if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger">
+            @errorMessage
+        </div>
+
+        <button class="btn btn-primary" @onclick="GoToLogin">
+            Ir para login
+        </button>
+    }
+    else
+    {
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <span class="text-muted">Total de demandas</span>
+                        <h2>@summary?.TotalDemands</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <span class="text-muted">Abertas</span>
+                        <h2>@summary?.OpenDemands</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <span class="text-muted">Em andamento</span>
+                        <h2>@summary?.InProgressDemands</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <span class="text-muted">Concluídas</span>
+                        <h2>@summary?.CompletedDemands</h2>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5>Taxa de conclusão</h5>
+                        <h2>@summary?.CompletionRate%</h2>
+                        <p class="text-muted mb-0">
+                            Percentual de demandas concluídas.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5>Tempo médio de resolução</h5>
+                        <h2>@resolutionTime?.AverageResolutionTimeInDays dias</h2>
+                        <p class="text-muted mb-0">
+                            Com base em @resolutionTime?.CompletedDemands demandas concluídas.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row g-3">
+
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+
+                        <h5>Demandas por status</h5>
+
+                        @if (byStatus.Any())
+                        {
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Status</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in byStatus)
+                                    {
+                                        <tr>
+                                            <td>@TranslateStatus(item.StatusName)</td>
+                                            <td>@item.Total</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <p class="text-muted mb-0">
+                                Nenhum dado encontrado.
+                            </p>
+                        }
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+
+                        <h5>Percentual por prioridade</h5>
+
+                        @if (priorityPercentages.Any())
+                        {
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Prioridade</th>
+                                        <th>Total</th>
+                                        <th>Percentual</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in priorityPercentages)
+                                    {
+                                        <tr>
+                                            <td>@TranslatePriority(item.PriorityName)</td>
+                                            <td>@item.Total</td>
+                                            <td>@item.Percentage%</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <p class="text-muted mb-0">
+                                Nenhum dado encontrado.
+                            </p>
+                        }
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+
+                        <h5>Top categorias</h5>
+
+                        @if (topCategories.Any())
+                        {
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Categoria</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in topCategories)
+                                    {
+                                        <tr>
+                                            <td>@item.CategoryName</td>
+                                            <td>@item.Total</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <p class="text-muted mb-0">
+                                Nenhum dado encontrado.
+                            </p>
+                        }
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+
+                        <h5>Evolução mensal</h5>
+
+                        @if (monthlyEvolution.Any())
+                        {
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Mês</th>
+                                        <th>Ano</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in monthlyEvolution)
+                                    {
+                                        <tr>
+                                            <td>@item.MonthName</td>
+                                            <td>@item.Year</td>
+                                            <td>@item.Total</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <p class="text-muted mb-0">
+                                Nenhum dado encontrado.
+                            </p>
+                        }
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
     }
 
-    public class DashboardSummaryDto
-    {
-        public int TotalDemands { get; set; }
-
-        public int OpenDemands { get; set; }
-
-        public int InProgressDemands { get; set; }
-
-        public int CompletedDemands { get; set; }
-
-        public int CanceledDemands { get; set; }
-
-        public decimal CompletionRate { get; set; }
-    }
-}
+</div>
