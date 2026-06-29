@@ -38,4 +38,11 @@ public partial class Categories : ComponentBase
     {
         NavigationManager.NavigateTo("/");
     }
+
+
+    protected void GoToCreateCategory()
+    {
+        NavigationManager.NavigateTo("/categorias/nova");
+    }
+
 }

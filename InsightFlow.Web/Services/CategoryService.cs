@@ -17,4 +17,14 @@ public class CategoryService
         return await _httpClient.GetFromJsonAsync<List<CategoryDto>>("api/Categories")
             ?? new List<CategoryDto>();
     }
+
+    public async Task<CategoryDto?> CreateAsync(CreateCategoryDto createCategoryDto)
+    {
+        var response = await _httpClient.PostAsJsonAsync("api/Categories", createCategoryDto);
+
+        if (!response.IsSuccessStatusCode)
+            return null;
+
+        return await response.Content.ReadFromJsonAsync<CategoryDto>();
+    }
 }
