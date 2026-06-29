@@ -25,6 +25,11 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDemandRepository, DemandRepository>();
 builder.Services.AddScoped<IDemandService, DemandService>();
 
+
+// Dashboard
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
