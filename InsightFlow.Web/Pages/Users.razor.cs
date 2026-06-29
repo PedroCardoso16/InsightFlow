@@ -49,4 +49,9 @@ public partial class Users : ComponentBase
             _ => "Desconhecido"
         };
     }
+
+    protected void GoToCreateUser()
+    {
+        NavigationManager.NavigateTo("/usuarios/novo");
+    }
 }

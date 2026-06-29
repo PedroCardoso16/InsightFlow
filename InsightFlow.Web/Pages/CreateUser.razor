@@ -1,0 +1,69 @@
+﻿@page "/usuarios/novo"
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">Novo Usuário</h2>
+            <p class="text-muted">Cadastre um novo usuário no sistema</p>
+        </div>
+
+        <button class="btn btn-outline-secondary" @onclick="GoBack">
+            Voltar
+        </button>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger">
+            @errorMessage
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(successMessage))
+    {
+        <div class="alert alert-success">
+            @successMessage
+        </div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+
+            <EditForm Model="createUser" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+
+                <div class="mb-3">
+                    <label class="form-label">Nome</label>
+                    <InputText class="form-control" @bind-Value="createUser.Name" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">E-mail</label>
+                    <InputText class="form-control" @bind-Value="createUser.Email" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Senha</label>
+                    <InputText type="password" class="form-control" @bind-Value="createUser.Password" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Perfil</label>
+                    <InputSelect class="form-select" @bind-Value="createUser.Role">
+                        <option value="1">Admin</option>
+                        <option value="2">Analista</option>
+                        <option value="3">Usuário</option>
+                    </InputSelect>
+                </div>
+
+                <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
+                    @(isSubmitting ? "Salvando..." : "Cadastrar Usuário")
+                </button>
+
+            </EditForm>
+
+        </div>
+    </div>
+
+</div>
