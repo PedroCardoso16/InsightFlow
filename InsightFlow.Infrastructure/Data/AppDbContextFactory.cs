@@ -10,7 +10,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
 
         optionsBuilder.UseSqlServer(
-            "Server=localhost;Database=InsightFlowDb;Trusted_Connection=True;TrustServerCertificate=True;"
+            "Server=(localdb)\\MSSQLLocalDB;Database=InsightFlowDb;Trusted_Connection=True;TrustServerCertificate=True;"
         );
 
         return new AppDbContext(optionsBuilder.Options);
