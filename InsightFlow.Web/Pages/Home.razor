@@ -1,7 +1,92 @@
 ﻿@page "/"
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
 
-<PageTitle>Home</PageTitle>
+<h3>Dashboard InsightFlow</h3>
 
-<h1>Hello, world!</h1>
+@if (isLoading)
+{
+    <p>Carregando dados...</p>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger">
+        @errorMessage
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h5>Total</h5>
+                <h3>@summary?.TotalDemands</h3>
+            </div>
+        </div>
 
-Welcome to your new app.
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h5>Abertas</h5>
+                <h3>@summary?.OpenDemands</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h5>Em andamento</h5>
+                <h3>@summary?.InProgressDemands</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h5>Concluídas</h5>
+                <h3>@summary?.CompletedDemands</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <div class="card p-3 shadow-sm">
+            <h5>Taxa de conclusão</h5>
+            <h3>@summary?.CompletionRate%</h3>
+        </div>
+    </div>
+}
+
+@code {
+    private DashboardSummaryDto? summary;
+    private bool isLoading = true;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            summary = await HttpClient.GetFromJsonAsync<DashboardSummaryDto>("api/Dashboard/summary");
+        }
+        catch
+        {
+            errorMessage = "Não foi possível carregar o dashboard. Faça login novamente.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    public class DashboardSummaryDto
+    {
+        public int TotalDemands { get; set; }
+
+        public int OpenDemands { get; set; }
+
+        public int InProgressDemands { get; set; }
+
+        public int CompletedDemands { get; set; }
+
+        public int CanceledDemands { get; set; }
+
+        public decimal CompletionRate { get; set; }
+    }
+}
