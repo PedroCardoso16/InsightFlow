@@ -87,4 +87,10 @@ public partial class Home : ComponentBase
         NavigationManager.NavigateTo("/demandas");
     }
 
+
+    protected void GoToCategories()
+    {
+        NavigationManager.NavigateTo("/categorias");
+    }
+
 }

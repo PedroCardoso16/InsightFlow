@@ -8,15 +8,21 @@
             <p class="text-muted">Indicadores analíticos das demandas</p>
         </div>
 
+        
         <div class="d-flex gap-2">
             <button class="btn btn-outline-primary" @onclick="GoToDemands">
                 Ver Demandas
+            </button>
+
+            <button class="btn btn-outline-secondary" @onclick="GoToCategories">
+                Ver Categorias
             </button>
 
             <button class="btn btn-outline-danger" @onclick="Logout">
                 Sair
             </button>
         </div>
+
     </div>
 
     @if (isLoading)
