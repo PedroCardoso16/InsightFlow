@@ -1,7 +1,33 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject InsightFlow.Web.Services.TokenService TokenService
 
-<AppNavbar />
+@if (!IsLoginPage)
+{
+    <AppNavbar />
+}
 
 <main>
     @Body
 </main>
+
+@code {
+    private bool IsLoginPage =>
+        NavigationManager.Uri.Contains("/login", StringComparison.OrdinalIgnoreCase);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        if (IsLoginPage)
+            return;
+
+        var token = await TokenService.GetTokenAsync();
+
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            NavigationManager.NavigateTo("/login", true);
+        }
+    }
+}
