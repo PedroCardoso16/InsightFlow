@@ -16,9 +16,12 @@ builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AuthorizationMessageHandler>();
 
+var apiBaseUrl = builder.Configuration["ApiBaseUrl"]
+    ?? throw new InvalidOperationException("ApiBaseUrl não configurada.");
+
 builder.Services.AddHttpClient("InsightFlowApi", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7098/");
+    client.BaseAddress = new Uri(apiBaseUrl);
 })
 .AddHttpMessageHandler<AuthorizationMessageHandler>();
 

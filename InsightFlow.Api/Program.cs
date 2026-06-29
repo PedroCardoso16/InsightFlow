@@ -76,21 +76,22 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+
+var allowedOrigins = builder.Configuration
+    .GetSection("AllowedOrigins")
+    .Get<string[]>() ?? Array.Empty<string>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazorApp", policy =>
     {
         policy
-            .WithOrigins(
-                "https://localhost:7135",
-                "http://localhost:7135",
-                "https://localhost:5002",
-                "http://localhost:5002"
-            )
+            .WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
 });
+
 
 var app = builder.Build();
 
