@@ -17,11 +17,20 @@ public partial class Categories : ComponentBase
     protected bool isLoading = true;
 
     protected string errorMessage = string.Empty;
+    protected string successMessage = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadCategories();
+    }
+
+    protected async Task LoadCategories()
+    {
         try
         {
+            isLoading = true;
+            errorMessage = string.Empty;
+
             categories = await CategoryService.GetAllAsync();
         }
         catch
@@ -39,10 +48,31 @@ public partial class Categories : ComponentBase
         NavigationManager.NavigateTo("/");
     }
 
-
     protected void GoToCreateCategory()
     {
         NavigationManager.NavigateTo("/categorias/nova");
     }
 
+    protected void GoToEditCategory(Guid id)
+    {
+        NavigationManager.NavigateTo($"/categorias/editar/{id}");
+    }
+
+    protected async Task InactivateCategory(Guid id)
+    {
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+
+        var result = await CategoryService.DeleteAsync(id);
+
+        if (!result)
+        {
+            errorMessage = "Não foi possível inativar a categoria.";
+            return;
+        }
+
+        successMessage = "Categoria inativada com sucesso.";
+
+        await LoadCategories();
+    }
 }

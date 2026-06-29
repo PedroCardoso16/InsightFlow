@@ -8,7 +8,6 @@
             <p class="text-muted">Categorias utilizadas para classificar demandas</p>
         </div>
 
-        
         <div class="d-flex gap-2">
             <button class="btn btn-primary" @onclick="GoToCreateCategory">
                 Nova Categoria
@@ -18,7 +17,6 @@
                 Voltar ao Dashboard
             </button>
         </div>
-
     </div>
 
     @if (isLoading)
@@ -44,6 +42,13 @@
         <div class="card shadow-sm border-0">
             <div class="card-body">
 
+                @if (!string.IsNullOrWhiteSpace(successMessage))
+                {
+                    <div class="alert alert-success">
+                        @successMessage
+                    </div>
+                }
+
                 <table class="table table-hover table-sm align-middle">
                     <thead>
                         <tr>
@@ -51,14 +56,20 @@
                             <th>Descrição</th>
                             <th>Status</th>
                             <th>Criada em</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         @foreach (var category in categories)
                         {
                             <tr>
                                 <td>@category.Name</td>
-                                <td>@(string.IsNullOrWhiteSpace(category.Description) ? "-" : category.Description)</td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(category.Description) ? "-" : category.Description)
+                                </td>
+
                                 <td>
                                     @if (category.IsActive)
                                     {
@@ -69,7 +80,23 @@
                                         <span class="badge bg-secondary">Inativa</span>
                                     }
                                 </td>
+
                                 <td>@category.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-sm btn-outline-primary"
+                                                @onclick="() => GoToEditCategory(category.Id)">
+                                            Editar
+                                        </button>
+
+                                        <button class="btn btn-sm btn-outline-danger"
+                                                disabled="@(!category.IsActive)"
+                                                @onclick="() => InactivateCategory(category.Id)">
+                                            Inativar
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
                         }
                     </tbody>
