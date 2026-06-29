@@ -12,7 +12,6 @@
             <p class="text-muted">Acompanhamento das demandas cadastradas</p>
         </div>
 
-        
         <div class="d-flex gap-2">
             <button class="btn btn-primary" @onclick="GoToCreateDemand">
                 Nova Demanda
@@ -22,7 +21,6 @@
                 Voltar ao Dashboard
             </button>
         </div>
-
     </div>
 
     @if (isLoading)
@@ -48,6 +46,13 @@
         <div class="card shadow-sm border-0">
             <div class="card-body">
 
+                @if (!string.IsNullOrWhiteSpace(successMessage))
+                {
+                    <div class="alert alert-success">
+                        @successMessage
+                    </div>
+                }
+
                 <table class="table table-hover table-sm align-middle">
                     <thead>
                         <tr>
@@ -58,6 +63,7 @@
                             <th>Solicitante</th>
                             <th>Responsável</th>
                             <th>Criada em</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -67,10 +73,35 @@
                                 <td>@demand.Title</td>
                                 <td>@demand.CategoryName</td>
                                 <td>@TranslatePriority(demand.Priority)</td>
-                                <td>@TranslateStatus(demand.Status)</td>
+                                <td>
+                                    <span class="@GetStatusBadgeClass(demand.Status)">
+                                        @TranslateStatus(demand.Status)
+                                    </span>
+                                </td>
                                 <td>@demand.CreatedByUserName</td>
                                 <td>@(string.IsNullOrWhiteSpace(demand.AssignedToUserName) ? "-" : demand.AssignedToUserName)</td>
                                 <td>@demand.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <button class="btn btn-sm btn-outline-warning"
+                                                disabled="@(demand.Status == 2)"
+                                                @onclick="() => UpdateStatus(demand.Id, 2)">
+                                            Em andamento
+                                        </button>
+
+                                        <button class="btn btn-sm btn-outline-success"
+                                                disabled="@(demand.Status == 3)"
+                                                @onclick="() => UpdateStatus(demand.Id, 3)">
+                                            Concluir
+                                        </button>
+
+                                        <button class="btn btn-sm btn-outline-danger"
+                                                disabled="@(demand.Status == 4)"
+                                                @onclick="() => UpdateStatus(demand.Id, 4)">
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -84,13 +115,25 @@
 
 @code {
     private List<DemandDto> demands = new();
+
     private bool isLoading = true;
+    private bool isUpdating = false;
+
     private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadDemands();
+    }
+
+    private async Task LoadDemands()
+    {
         try
         {
+            isLoading = true;
+            errorMessage = string.Empty;
+
             demands = await DemandService.GetAllAsync();
         }
         catch
@@ -103,9 +146,39 @@
         }
     }
 
+    private async Task UpdateStatus(Guid demandId, int status)
+    {
+        if (isUpdating)
+            return;
+
+        isUpdating = true;
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+
+        var result = await DemandService.UpdateStatusAsync(demandId, status);
+
+        if (result is null)
+        {
+            errorMessage = "Não foi possível atualizar o status da demanda.";
+            isUpdating = false;
+            return;
+        }
+
+        successMessage = "Status atualizado com sucesso.";
+
+        await LoadDemands();
+
+        isUpdating = false;
+    }
+
     private void GoToDashboard()
     {
         NavigationManager.NavigateTo("/");
+    }
+
+    private void GoToCreateDemand()
+    {
+        NavigationManager.NavigateTo("/demandas/nova");
     }
 
     private static string TranslateStatus(int status)
@@ -132,9 +205,15 @@
         };
     }
 
-    private void GoToCreateDemand()
+    private static string GetStatusBadgeClass(int status)
     {
-        NavigationManager.NavigateTo("/demandas/nova");
+        return status switch
+        {
+            1 => "badge bg-secondary",
+            2 => "badge bg-warning text-dark",
+            3 => "badge bg-success",
+            4 => "badge bg-danger",
+            _ => "badge bg-light text-dark"
+        };
     }
-
 }

@@ -27,4 +27,19 @@ public class DemandService
 
         return await response.Content.ReadFromJsonAsync<DemandDto>();
     }
+
+    public async Task<DemandDto?> UpdateStatusAsync(Guid id, int status)
+    {
+        var updateStatusDto = new UpdateDemandStatusDto
+        {
+            Status = status
+        };
+
+        var response = await _httpClient.PatchAsJsonAsync($"api/Demands/{id}/status", updateStatusDto);
+
+        if (!response.IsSuccessStatusCode)
+            return null;
+
+        return await response.Content.ReadFromJsonAsync<DemandDto>();
+    }
 }
